@@ -7,12 +7,15 @@
     </head>
     <body>
         <table>
+<!--
+property represents the keys in URLdatabase, urls is the database
+-->
         <% for(let property in urls){ %>
             <tr>
                 <td><%= property %></td>
                 <td>><%= urls[property] %></td>
-                <form method="POST" action="/urls/9sm5xK/delete">
-                    <td><button type="Delete">Delete</button></td>
+                <form method="POST" action="/urls/<%=property%>/delete">
+                    <td><button type="submit">Delete</button></td>
                 </form>
             </tr>
 

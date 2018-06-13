@@ -24,10 +24,6 @@ app.get("/urls", (req, res) => {
     res.render('urls_index', databaseObject)
 })
 
-app.post("/urls_index", (req, res) =>{
-  
-})
-
 // RNG saver
 app.post("/urls", (req, res) => {
   // console.log(urlDatabase[random]);  // debug statement to see POST parameters
@@ -72,3 +68,17 @@ app.get("/urls/:id", (req, res) => {
 
 
 });
+
+//Delete
+app.post("/urls/:shortURL/delete", (req, res) => {
+  delete urlDatabase[req.params.shortURL];
+  res.redirect("/urls")
+})
+
+//update
+app.post("/urls/:shortURL/update", (req, res) => {
+  console.log(req.body)
+  urlDatabase[req.params.shortURL] = req.body["updatedLink"]
+  console.log(req.body["updatedLink"])
+  res.redirect("/urls")
+})
