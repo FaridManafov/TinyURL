@@ -1,0 +1,26 @@
+<html lang = "eng">
+    
+    <head>
+        <title>
+            Tinyapp
+        </title>
+    </head>
+    <body>
+        <table>
+        <% for(let property in urls){ %>
+            <tr>
+                <td><%= property %></td>
+                <td>><%= urls[property] %></td>
+                <form method="POST" action="/urls/9sm5xK/delete">
+                    <td><button type="Delete">Delete</button></td>
+                </form>
+            </tr>
+
+        </form>
+       <% } %>
+        
+       </table>
+    </body>
+</html>
+
+
