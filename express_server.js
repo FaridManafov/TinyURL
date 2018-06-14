@@ -10,14 +10,53 @@ app.use(cookieparser())
 
 app.set("view engine", "ejs");  
 
-var urlDatabase = {
+const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
 
+const users = { 
+  "userRandomID": {
+    id: "userRandomID", 
+    email: "user@example.com", 
+    password: "purple-monkey-dinosaur"
+  },
+ "user2RandomID": {
+    id: "user2RandomID", 
+    email: "user2@example.com", 
+    password: "dishwasher-funk"
+  }
+}
+
 // Hello!
 app.get("/", (req, res) => {
   res.end("Hello!");
+});
+
+// registration form get
+app.get('/register', (req, res) => {
+  res.render("urls_registration")
+})
+
+//registration form post
+app.post('/register', (req, res) => {
+  randomID = randomstring.generate(6);
+
+  if (req.body.email == "" || req.body.password == "" || users.hasOwnProperty(req.body.email)){
+    res.status(400);
+    res.send('Error 400 Bad Paramater')
+
+  } else {
+      newUser = {
+      id: randomID, 
+      email: req.body.email, 
+      password: req.body.password
+    }
+    users[randomID] = newUser
+    res.cookie("user_id", randomID)
+    console.log(users)
+    res.redirect("/urls")
+  }
 });
 
 //
@@ -35,6 +74,7 @@ app.post("/urls", (req, res) => {
   res.send("Ok");         // Respond with 'Ok' (we will replace this)
   
 });
+
 //redirection
 app.get("/u/:shortURL", (req, res) => {
   let longURL = urlDatabase[req.params.shortURL]

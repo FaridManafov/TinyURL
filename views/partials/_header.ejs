@@ -4,7 +4,7 @@
 
     <body>
 
-        <% if (typeof(username)  == "undefined"){%>
+        <% if (typeof(user_id)  == "undefined"){%>
             <form method="POST" action="/login">
                 Username: <input type="text" name="username">
                 <input type="submit" value="Log In">
@@ -12,7 +12,7 @@
 
         <%} else {%>
         
-            <h1>Welcome <%= username%></h1>
+            <h1>Welcome <%= users[users_id]%></h1>
             <form method="POST" action="/logout">
                 <input type="submit" value="Log Out">
             </form>
