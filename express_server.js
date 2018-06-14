@@ -3,7 +3,7 @@ var app = express();
 var PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
 var randomstring = require("randomstring");
-var cookieparser = require('cookie-parser')
+var cookieparser = require('cookie-parser');
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieparser())
@@ -22,8 +22,8 @@ app.get("/", (req, res) => {
 
 //
 app.get("/urls", (req, res) => {
-    let databaseObject = {urls : urlDatabase}
-    res.render('urls_index', databaseObject)
+    let templateVars = {urls : urlDatabase}
+    res.render('urls_index', templateVars)
 })
 
 // RNG saver
@@ -72,15 +72,24 @@ app.get("/urls/:id", (req, res) => {
 });
 //login
 app.post("/login", (req, res) => {
+  
   console.log(req.body.username)
   res.cookie("username", req.body.username)
   let templateVars = {
     shortURL: req.params.id, 
     longURL: urlDatabase[req.params.id],
     username: req.cookies["username"],
-    // ... any other vars
+    urls : urlDatabase
   };
   res.render("urls_index", templateVars);
+
+})
+
+//logout
+
+app.post("/logout", (req, res) => {
+  res.clearCookie("username");
+  res.redirect("/urls")
 })
 
 //Delete
