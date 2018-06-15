@@ -19,12 +19,15 @@ const users = {
   "userRandomID": {
     id: "userRandomID", 
     email: "user@example.com", 
-    password: "purple-monkey-dinosaur"
+    password: "purple-monkey-dinosaur",
+    urls: {"b2xVn2": "http://www.lighthouselabs.ca",
+          "9sm5xK": "http://www.google.com"}
   },
  "user2RandomID": {
     id: "user2RandomID", 
     email: "user2@example.com", 
-    password: "dishwasher-funk"
+    password: "dishwasher-funk",
+    urls : ""
   }
 }
 
@@ -51,7 +54,8 @@ app.post('/register', (req, res) => {
       newUser = {
       id: randomID, 
       email: req.body.email, 
-      password: req.body.password
+      password: req.body.password,
+      urls: ""
     }
     users[randomID] = newUser
     res.cookie("user_id", randomID)
@@ -63,19 +67,23 @@ app.post('/register', (req, res) => {
 
 //
 app.get("/urls", (req, res) => {
-    let templateVars = {urls: urlDatabase, user: users[req.cookies["user_id"]]};
+    let templateVars = {urls: users[req.cookies.user_id].urls, user: users[req.cookies["user_id"]]};
     res.render('urls_index', templateVars)
 })
 
 
 
-// RNG saver
+// New TinyUrl link poster saver
 app.post("/urls", (req, res) => {
   // console.log(urlDatabase[random]);  // debug statement to see POST parameters
-  randomShortUrl = randomstring.generate(6);
-  urlDatabase[randomShortUrl] = req.body.longURL;
-  console.log(urlDatabase);
-  res.send("Ok");         // Respond with 'Ok' (we will replace this)
+  if (req.cookies["user_id"]) {
+    randomShortUrl = randomstring.generate(6);
+    urlDatabase[randomShortUrl] = req.body.longURL;
+    console.log(urlDatabase);
+    res.redirect("/urls")
+  } else {
+    res.redirect("/login")
+  }
   
 });
 
@@ -98,7 +106,6 @@ app.listen(PORT, () => {
 });
 
 // body parser
-
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
@@ -107,7 +114,6 @@ app.get("/urls/new", (req, res) => {
 //~~~~~~~~
 
 // :id grabber of shortURL that displays short and long urls
-
 app.get("/urls/:id", (req, res) => {
   let templateVars = {
     shortURL: req.params.id, 
@@ -122,8 +128,7 @@ app.get("/urls/:id", (req, res) => {
 app.get("/login", (req, res) => {
   res.render("urls_login")
 })
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CREATED LOGIN PAGE, CREATE A FOR LOOP
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~THAT WILL PROCESS THE OBJECT LOGINS AND PASSWORDS
+
 //login post
 app.post("/login", (req, res) => {
   for (user_id in users){
@@ -145,7 +150,6 @@ app.post("/login", (req, res) => {
 });
 
 //logout
-
 app.post("/logout", (req, res) => {
   res.clearCookie("user_id");
   res.redirect("/urls")
@@ -153,11 +157,11 @@ app.post("/logout", (req, res) => {
 
 //Delete
 app.post("/urls/:shortURL/delete", (req, res) => {
-  delete urlDatabase[req.params.shortURL];
+  delete users[req.cookies.user_id].urls[req.params.shortURL];
   res.redirect("/urls")
 })
 
-//update
+//update edit
 app.post("/urls/:shortURL/update", (req, res) => {
   console.log(req.body)
   urlDatabase[req.params.shortURL] = req.body["updatedLink"]
