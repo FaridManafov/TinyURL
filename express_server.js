@@ -40,9 +40,10 @@ app.get('/register', (req, res) => {
 
 //registration form post
 app.post('/register', (req, res) => {
+
   randomID = randomstring.generate(6);
 
-  if (req.body.email == "" || req.body.password == "" || users.hasOwnProperty(req.body.email)){
+  if (req.body.email == "" || req.body.password == "" || users.hasOwnProperty(req.body.email) === true){
     res.status(400);
     res.send('Error 400 Bad Paramater')
 
@@ -54,16 +55,19 @@ app.post('/register', (req, res) => {
     }
     users[randomID] = newUser
     res.cookie("user_id", randomID)
-    console.log(users)
     res.redirect("/urls")
   }
 });
 
+
+
 //
 app.get("/urls", (req, res) => {
-    let templateVars = {urls : urlDatabase}
+    let templateVars = {urls: urlDatabase, user: users[req.cookies["user_id"]]};
     res.render('urls_index', templateVars)
 })
+
+
 
 // RNG saver
 app.post("/urls", (req, res) => {
@@ -105,30 +109,45 @@ app.get("/urls/new", (req, res) => {
 // :id grabber of shortURL that displays short and long urls
 
 app.get("/urls/:id", (req, res) => {
-  let templateVars = {shortURL: req.params.id, longURL: urlDatabase[req.params.id]};
+  let templateVars = {
+    shortURL: req.params.id, 
+    user: users[req.cookies["user_id"]],
+    longURL: urlDatabase[req.params.id]};
   res.render("urls_show", templateVars)
 
 
 });
-//login
-app.post("/login", (req, res) => {
-  
-  console.log(req.body.username)
-  res.cookie("username", req.body.username)
-  let templateVars = {
-    shortURL: req.params.id, 
-    longURL: urlDatabase[req.params.id],
-    username: req.cookies["username"],
-    urls : urlDatabase
-  };
-  res.render("urls_index", templateVars);
 
+//login page get
+app.get("/login", (req, res) => {
+  res.render("urls_login")
 })
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CREATED LOGIN PAGE, CREATE A FOR LOOP
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~THAT WILL PROCESS THE OBJECT LOGINS AND PASSWORDS
+//login post
+app.post("/login", (req, res) => {
+  for (user_id in users){
+    if(req.body.email === users[user_id].email){
+      if(req.body.password === users[user_id].password){
+        //return into /urls with the email and password
+        res.cookie("user_id", users[user_id].id);
+        res.redirect("/urls");
+        return ;
+      } else {
+        res.status("403");
+        res.render("403Error");
+        return ;
+      }
+    } 
+  }
+  res.status("403");
+  res.render("403Error");
+});
 
 //logout
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("username");
+  res.clearCookie("user_id");
   res.redirect("/urls")
 })
 

@@ -3,16 +3,15 @@
     </header>
 
     <body>
-
-        <% if (typeof(user_id)  == "undefined"){%>
-            <form method="POST" action="/login">
-                Username: <input type="text" name="username">
-                <input type="submit" value="Log In">
-            </form>
+        <% if (typeof(user)  == "undefined"){%>
+            <a href="/login">Login</a>
+        <%}%>
+        <% if (typeof(user)  == "undefined"){%>
+            <a href="/register">Register</a>
 
         <%} else {%>
         
-            <h1>Welcome <%= users[users_id]%></h1>
+            <h1>Welcome <%= user.email%></h1>
             <form method="POST" action="/logout">
                 <input type="submit" value="Log Out">
             </form>
@@ -21,3 +20,8 @@
     </body>
     
 </html>
+
+<!-- <form method="POST" action="/login">
+    Username: <input type="text" name="username">
+    <input type="submit" value="Log In">
+</form> -->
