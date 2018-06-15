@@ -13,14 +13,12 @@ app.set("view engine", "ejs");
 const urlDatabase = {
   shortURLExample: {
     user_id: "userRandomID",
-    longURL: "http://www.google.com"
+    longURL: "http://www.youtube.com"
   },
-
   shortURLExample2: {
     user_id: "user2RandomID",
     longURL: "http://www.google.com"
   },
-
 };
 
 const users = { 
@@ -34,6 +32,20 @@ const users = {
     email: "user2@example.com", 
     password: "dishwasher-funk",
   }
+}
+
+
+function urlsForUser(id){
+  pulledLoggedInUser = {}
+  for (shortURL in urlDatabase){
+    if (id === urlDatabase[shortURL].user_id){
+      pulledLoggedInUser[shortURL]= {
+        user_id: urlDatabase[shortURL].user_id,
+        longURL: urlDatabase[shortURL].longURL
+      }
+    }
+  }
+  return pulledLoggedInUser;
 }
 
 // Hello!
@@ -60,23 +72,29 @@ app.post('/register', (req, res) => {
       id: randomID, 
       email: req.body.email, 
       password: req.body.password,
-      urls: ""
     }
     users[randomID] = newUser
     res.cookie("user_id", randomID)
     res.redirect("/urls")
+    console.log(newUser)
   }
 });
 
 
 
-//
+//login templateVars
 app.get("/urls", (req, res) => {
-    let templateVars = {urls: urlDatabase, user: users[req.cookies["user_id"]]};
-    res.render('urls_index', templateVars)
+  let templateVars = {
+    urls: urlsForUser(req.cookies.user_id),
+    user: users[req.cookies.user_id]};
+  res.render('urls_index', templateVars)
+  console.log(templateVars)
 })
 
-
+// console.log("database")
+// console.log(urlDatabase)
+// console.log("users")
+// console.log(users)
 
 // New TinyUrl link poster saver
 app.post("/urls", (req, res) => {

@@ -1,25 +1,26 @@
 <html lang = "eng">
 
     <body>
-            <%- include partials/_header.ejs%>
-        <table>
-<!--
-property represents the keys in URLdatabase, urls is the database
--->
-        <% for(let property in urls){ %>
-            <tr>
-                <td><%= property %></td>
-                <td>><%= urls[property] %></td>
-                <!-- <form method="POST" action="/urls/<%=property%>/edit"> -->
-                    <td><a href="/urls/<%=property%>">Edit</a></td>
-                <!-- </form> -->
-                <form method="POST" action="/urls/<%=property%>/delete">
-                    <td><button type="submit">Delete</button></td>
-                </form>
-            </tr>
+        <%- include partials/_header.ejs%>
+        <%if (user) {%>
+            <table>
+    <!--
+    property represents the keys in URLdatabase, 
+    urls is the database
+    -->
+            <% for(let property in urls){ %>
+                <tr>
+                    <td><%= property %></td>
+                    <td>><%= urls[property].longURL %></td>
+                        <td><a href="/urls/<%=property%>">Edit</a></td>
+                    <form method="POST" action="/urls/<%=property%>/delete">
+                        <td><button type="submit">Delete</button></td>
+                    </form>
+                </tr>
 
-        </form>
-       <% } %>
+            </form>
+            <% } %>
+        <% } %>
         <td><a href="/urls/new">New Tiny Url</a></td>
        </table>
     </body>
