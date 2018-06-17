@@ -6,13 +6,13 @@ var randomstring = require("randomstring");
 var cookiesession = require('cookie-session');
 const bcrypt = require('bcrypt');
 
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookiesession({
   name: "user_id",
   keys: ["urlDatabase"]
 }))
 
-app.set("view engine", "ejs");  
+app.set("view engine", "ejs");
 
 
 const urlDatabase = {
@@ -26,26 +26,26 @@ const urlDatabase = {
   },
 };
 
-const users = { 
+const users = {
   "userRandomID": {
-    id: "userRandomID", 
-    email: "user@example.com", 
+    id: "userRandomID",
+    email: "user@example.com",
     password: "purple-monkey-dinosaur"
-    
+
   },
- "user2RandomID": {
-    id: "user2RandomID", 
-    email: "user2@example.com", 
+  "user2RandomID": {
+    id: "user2RandomID",
+    email: "user2@example.com",
     password: "dishwasher-funk",
   }
 }
 
 
-function urlsForUser(id){
+function urlsForUser(id) {
   pulledLoggedInUser = {}
-  for (shortURL in urlDatabase){
-    if (id === urlDatabase[shortURL].user_id){
-      pulledLoggedInUser[shortURL]= {
+  for (shortURL in urlDatabase) {
+    if (id === urlDatabase[shortURL].user_id) {
+      pulledLoggedInUser[shortURL] = {
         user_id: urlDatabase[shortURL].user_id,
         longURL: urlDatabase[shortURL].longURL
       }
@@ -69,22 +69,21 @@ app.post('/register', (req, res) => {
 
   randomID = randomstring.generate(6);
 
-  if (req.body.email == "" || req.body.password == "" || users.hasOwnProperty(req.body.email) === true){
+  if (req.body.email == "" || req.body.password == "" || users.hasOwnProperty(req.body.email) === true) {
     res.status(400);
-    res.send('Error 400 Bad Paramater')
+    res.send('Error 400 Bad Paramater');
 
   } else {
-    hashedPassword = bcrypt.hashSync( req.body.password, 10);
-      newUser = {
-      id: randomID, 
-      email: req.body.email, 
+    hashedPassword = bcrypt.hashSync(req.body.password, 10);
+    newUser = {
+      id: randomID,
+      email: req.body.email,
       password: hashedPassword,
     }
-    
+
     users[randomID] = newUser
     req.session.user_id = randomID
     res.redirect("/urls")
-    console.log(newUser)
   }
 });
 
@@ -94,28 +93,21 @@ app.post('/register', (req, res) => {
 app.get("/urls", (req, res) => {
   let templateVars = {
     urls: urlsForUser(req.session.user_id),
-    user: users[req.session.user_id]};
+    user: users[req.session.user_id]
+  };
   res.render('urls_index', templateVars)
-  console.log(templateVars)
 })
-
-// console.log("database")
-// console.log(urlDatabase)
-// console.log("users")
-// console.log(users)
 
 // New TinyUrl link poster saver
 app.post("/urls", (req, res) => {
-  // console.log(urlDatabase[random]);  // debug statement to see POST parameters
   if (req.session.user_id) {
     randomShortUrl = randomstring.generate(6);
     urlDatabase[randomShortUrl] = req.body.longURL;
-    console.log(urlDatabase);
     res.redirect("/urls")
   } else {
     res.redirect("/login")
   }
-  
+
 });
 
 //redirection
@@ -129,7 +121,7 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/hello", (req, res) => {
-    res.end("<html><body>Hello <b>World</b></body></html>\n");
+  res.end("<html><body>Hello <b>World</b></body></html>\n");
 });
 
 app.listen(PORT, () => {
@@ -142,17 +134,14 @@ app.get("/urls/new", (req, res) => {
 });
 
 
-//~~~~~~~~
-
 // :id grabber of shortURL that displays short and long urls
 app.get("/urls/:id", (req, res) => {
   let templateVars = {
-    shortURL: req.params.id, 
+    shortURL: req.params.id,
     user: users[req.session.user_id],
-    longURL: urlDatabase[req.params.id]};
+    longURL: urlDatabase[req.params.id]
+  };
   res.render("urls_show", templateVars)
-
-
 });
 
 //login page get
@@ -162,19 +151,19 @@ app.get("/login", (req, res) => {
 
 //login post
 app.post("/login", (req, res) => {
-  for (user_id in users){
-    if(req.body.email === users[user_id].email){
-      if(bcrypt.compareSync(req.body.password, users[user_id].password)){
+  for (user_id in users) {
+    if (req.body.email === users[user_id].email) {
+      if (bcrypt.compareSync(req.body.password, users[user_id].password)) {
         //return into /urls with the email and password
         req.session.user_id = users[user_id].id;
         res.redirect("/urls");
-        return ;
+        return;
       } else {
         res.status("403");
         res.render("403Error");
-        return ;
+        return;
       }
-    } 
+    }
   }
   res.status("403");
   res.render("403Error");
