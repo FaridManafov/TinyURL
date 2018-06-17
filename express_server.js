@@ -3,11 +3,14 @@ var app = express();
 var PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
 var randomstring = require("randomstring");
-var cookieparser = require('cookie-session');
+var cookiesession = require('cookie-session');
 const bcrypt = require('bcrypt');
 
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(cookieparser())
+app.use(cookiesession({
+  name: "user_id",
+  keys: ["urlDatabase"]
+}))
 
 app.set("view engine", "ejs");  
 
@@ -79,7 +82,7 @@ app.post('/register', (req, res) => {
     }
     
     users[randomID] = newUser
-    res.cookie("user_id", randomID)
+    req.session.user_id = randomID
     res.redirect("/urls")
     console.log(newUser)
   }
@@ -90,8 +93,8 @@ app.post('/register', (req, res) => {
 //login templateVars
 app.get("/urls", (req, res) => {
   let templateVars = {
-    urls: urlsForUser(req.cookies.user_id),
-    user: users[req.cookies.user_id]};
+    urls: urlsForUser(req.session.user_id),
+    user: users[req.session.user_id]};
   res.render('urls_index', templateVars)
   console.log(templateVars)
 })
@@ -104,7 +107,7 @@ app.get("/urls", (req, res) => {
 // New TinyUrl link poster saver
 app.post("/urls", (req, res) => {
   // console.log(urlDatabase[random]);  // debug statement to see POST parameters
-  if (req.cookies["user_id"]) {
+  if (req.session.user_id) {
     randomShortUrl = randomstring.generate(6);
     urlDatabase[randomShortUrl] = req.body.longURL;
     console.log(urlDatabase);
@@ -145,7 +148,7 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   let templateVars = {
     shortURL: req.params.id, 
-    user: users[req.cookies["user_id"]],
+    user: users[req.session.user_id],
     longURL: urlDatabase[req.params.id]};
   res.render("urls_show", templateVars)
 
@@ -163,7 +166,7 @@ app.post("/login", (req, res) => {
     if(req.body.email === users[user_id].email){
       if(bcrypt.compareSync(req.body.password, users[user_id].password)){
         //return into /urls with the email and password
-        res.cookie("user_id", users[user_id].id);
+        req.session.user_id = users[user_id].id;
         res.redirect("/urls");
         return ;
       } else {
@@ -185,7 +188,7 @@ app.post("/logout", (req, res) => {
 
 //Delete
 app.post("/urls/:shortURL/delete", (req, res) => {
-  if (urlDatabase[req.params.shortURL].user_id === req.cookies.user_id) {
+  if (urlDatabase[req.params.shortURL].user_id === req.session.user_id) {
     delete urlDatabase[req.params.shortURL];
   }
   res.redirect("/urls")
@@ -193,7 +196,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 //update edit
 app.post("/urls/:shortURL/update", (req, res) => {
-  if (urlDatabase[req.params.shortURL].user_id === req.cookies.user_id) {
+  if (urlDatabase[req.params.shortURL].user_id === req.session.user_id) {
     urlDatabase[req.params.shortURL] = req.body["updatedLink"]
   }
   res.redirect("/urls")
