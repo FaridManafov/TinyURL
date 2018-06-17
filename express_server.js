@@ -3,12 +3,14 @@ var app = express();
 var PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
 var randomstring = require("randomstring");
-var cookieparser = require('cookie-parser');
+var cookieparser = require('cookie-session');
+const bcrypt = require('bcrypt');
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieparser())
 
 app.set("view engine", "ejs");  
+
 
 const urlDatabase = {
   shortURLExample: {
@@ -26,6 +28,7 @@ const users = {
     id: "userRandomID", 
     email: "user@example.com", 
     password: "purple-monkey-dinosaur"
+    
   },
  "user2RandomID": {
     id: "user2RandomID", 
@@ -53,7 +56,7 @@ app.get("/", (req, res) => {
   res.end("Hello!");
 });
 
-// registration form get
+// form get
 app.get('/register', (req, res) => {
   res.render("urls_registration")
 })
@@ -68,11 +71,13 @@ app.post('/register', (req, res) => {
     res.send('Error 400 Bad Paramater')
 
   } else {
+    hashedPassword = bcrypt.hashSync( req.body.password, 10);
       newUser = {
       id: randomID, 
       email: req.body.email, 
-      password: req.body.password,
+      password: hashedPassword,
     }
+    
     users[randomID] = newUser
     res.cookie("user_id", randomID)
     res.redirect("/urls")
@@ -156,7 +161,7 @@ app.get("/login", (req, res) => {
 app.post("/login", (req, res) => {
   for (user_id in users){
     if(req.body.email === users[user_id].email){
-      if(req.body.password === users[user_id].password){
+      if(bcrypt.compareSync(req.body.password, users[user_id].password)){
         //return into /urls with the email and password
         res.cookie("user_id", users[user_id].id);
         res.redirect("/urls");

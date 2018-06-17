@@ -1,0 +1,30 @@
+{
+  "name": "tinyapp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "express_server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FaridManafov/tinyURL.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/FaridManafov/tinyURL/issues"
+  },
+  "homepage": "https://github.com/FaridManafov/tinyURL#readme",
+  "devDependencies": {
+    "bcrypt": "^2.0.0",
+    "body-parser": "^1.18.3",
+    "cookie-parser": "^1.4.3",
+    "ejs": "^2.6.1",
+    "express": "^4.16.3",
+    "randomstring": "^1.1.5"
+  },
+  "dependencies": {
+    "cookie-session": "^2.0.0-beta.3"
+  }
+}
