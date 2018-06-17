@@ -7,8 +7,8 @@ the CSS will be worked on in the future!
 
 ## Final Product
 
-!["The main page of the page when you have urls!"](#)
-!["The new url page to make a new url"](#)
+!["The main page of the page when you have urls!"](https://github.com/FaridManafov/TinyURL/blob/master/docs/mainUrls.png)
+!["The new url page to make a new url"](https://github.com/FaridManafov/TinyURL/blob/master/docs/newUrlPage.png)
 ## Dependencies
 
 - Node.js
