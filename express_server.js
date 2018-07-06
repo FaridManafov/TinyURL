@@ -7,13 +7,13 @@ var cookiesession = require('cookie-session');
 const bcrypt = require('bcrypt');
 
 app.use(bodyParser.urlencoded({ extended: true }));
+
 app.use(cookiesession({
   name: "user_id",
   keys: ["urlDatabase"]
 }))
 
 app.set("view engine", "ejs");
-
 
 const urlDatabase = {
   shortURLExample: {
@@ -87,8 +87,6 @@ app.post('/register', (req, res) => {
   }
 });
 
-
-
 //login templateVars
 app.get("/urls", (req, res) => {
   let templateVars = {
@@ -102,7 +100,10 @@ app.get("/urls", (req, res) => {
 app.post("/urls", (req, res) => {
   if (req.session.user_id) {
     randomShortUrl = randomstring.generate(6);
-    urlDatabase[randomShortUrl] = req.body.longURL;
+    urlDatabase[randomShortUrl] = {
+      user_id: req.session.user_id,
+      longURL: req.body.longURL
+    }
     res.redirect("/urls")
   } else {
     res.redirect("/login")
@@ -139,7 +140,7 @@ app.get("/urls/:id", (req, res) => {
   let templateVars = {
     shortURL: req.params.id,
     user: users[req.session.user_id],
-    longURL: urlDatabase[req.params.id]
+    longURL: urlDatabase[req.params.id].longURL
   };
   res.render("urls_show", templateVars)
 });
@@ -178,6 +179,7 @@ app.post("/logout", (req, res) => {
 //Delete
 app.post("/urls/:shortURL/delete", (req, res) => {
   if (urlDatabase[req.params.shortURL].user_id === req.session.user_id) {
+    console.log(urlDatabase[req.params.shortURL])
     delete urlDatabase[req.params.shortURL];
   }
   res.redirect("/urls")
@@ -186,7 +188,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 //update edit
 app.post("/urls/:shortURL/update", (req, res) => {
   if (urlDatabase[req.params.shortURL].user_id === req.session.user_id) {
-    urlDatabase[req.params.shortURL] = req.body["updatedLink"]
+    urlDatabase[req.params.shortURL].longURL = req.body["updatedLink"]
   }
   res.redirect("/urls")
 })
