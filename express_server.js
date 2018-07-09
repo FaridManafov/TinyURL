@@ -108,13 +108,17 @@ app.post("/urls", (req, res) => {
   } else {
     res.redirect("/login")
   }
-
 });
 
 //redirection
 app.get("/u/:shortURL", (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL]
-  res.redirect(longURL);
+  // console.log("req shorturl", urlDatabase[req.params.shortURL])
+  // console.log(urlDatabase[req.params.shortURL].longURL)
+  let site = urlDatabase[req.params.shortURL].longURL
+  console.log(site)
+  // console.log("longurl", longURL)
+  // res.status(301)
+  res.redirect(site);
 });
 
 app.get("/urls.json", (req, res) => {
