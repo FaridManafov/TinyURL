@@ -69,7 +69,7 @@ app.post('/register', (req, res) => {
 
   randomID = randomstring.generate(6);
 
-  if (req.body.email == "" || req.body.password == "" || users.hasOwnProperty(req.body.email) === true) {
+  if (req.body.email === "" || req.body.password === "" || users.hasOwnProperty(req.body.email) === true) {
     res.status(400);
     res.send('Error 400 Bad Paramater');
 
