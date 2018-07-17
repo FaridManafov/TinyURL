@@ -67,24 +67,31 @@ app.get('/register', (req, res) => {
 //registration form post
 app.post('/register', (req, res) => {
 
-  randomID = randomstring.generate(6);
-
-  if (req.body.email === "" || req.body.password === "" || users.hasOwnProperty(req.body.email) === true) {
+  if (req.body.email === "" || req.body.password === "") {
+    console.log(req.body.email)
     res.status(400);
     res.send('Error 400 Bad Paramater');
-
   } else {
-    hashedPassword = bcrypt.hashSync(req.body.password, 10);
-    newUser = {
-      id: randomID,
-      email: req.body.email,
-      password: hashedPassword,
+    for (property in users){
+      if (users[property].email === req.body.email){
+        console.log(users[property])
+        res.status(400);
+        res.send('Error 400 User already exists');
+      } else {
+        randomID = randomstring.generate(6);
+        hashedPassword = bcrypt.hashSync(req.body.password, 10);
+        newUser = {
+          id: randomID,
+          email: req.body.email,
+          password: hashedPassword,
+        }
+        users[randomID] = newUser
+        req.session.user_id = randomID
+      }
     }
-
-    users[randomID] = newUser
-    req.session.user_id = randomID
-    res.redirect("/urls")
   }
+  
+  res.redirect("/urls")
 });
 
 //login templateVars
