@@ -119,13 +119,8 @@ app.post("/urls", (req, res) => {
 
 //redirection
 app.get("/u/:shortURL", (req, res) => {
-  // console.log("req shorturl", urlDatabase[req.params.shortURL])
-  // console.log(urlDatabase[req.params.shortURL].longURL)
-  let site = urlDatabase[req.params.shortURL].longURL
-  console.log(site)
-  // console.log("longurl", longURL)
-  // res.status(301)
-  res.redirect(site);
+    let site = urlDatabase[req.params.shortURL].longURL
+    res.redirect(site);
 });
 
 app.get("/urls.json", (req, res) => {
@@ -153,6 +148,10 @@ app.get("/urls/:id", (req, res) => {
     user: users[req.session.user_id],
     longURL: urlDatabase[req.params.id].longURL
   };
+  if (urlDatabase[req.params.id].user_id !== req.session.user_id){
+    res.status(400);
+    res.send('You do not have permission to edit this URL');
+  }
   res.render("urls_show", templateVars)
 });
 
