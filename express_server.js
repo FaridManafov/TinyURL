@@ -71,7 +71,6 @@ app.post("/register", (req, res) => {
   let userExists = false;
 
   if (req.body.email === "" || req.body.password === "") {
-    console.log(req.body.email);
     res.status(400);
     res.send("Error 400 Bad Paramater");
   } else {
@@ -83,7 +82,6 @@ app.post("/register", (req, res) => {
     }
 
     if (userExists === true){
-      console.log(users[property], "this is already existing");
       res.status(400);
       res.send("Error 400 User already exists");
     } else {
@@ -92,7 +90,6 @@ app.post("/register", (req, res) => {
         email: req.body.email,
         password: hashedPassword
       };
-      console.log(newUser, "this is passed");
       users[randomID] = newUser;
       req.session.user_id = randomID;
       res.redirect("/urls");
@@ -195,7 +192,6 @@ app.post("/logout", (req, res) => {
 //Delete
 app.post("/urls/:shortURL/delete", (req, res) => {
   if (urlDatabase[req.params.shortURL].user_id === req.session.user_id) {
-    console.log(urlDatabase[req.params.shortURL]);
     delete urlDatabase[req.params.shortURL];
   }
   res.redirect("/urls");
