@@ -56,7 +56,7 @@ function urlsForUser(id) {
 
 // Hello!
 app.get("/", (req, res) => {
-  res.redirect('/urls')
+  res.redirect("/urls");
 });
 
 // form get
@@ -81,7 +81,7 @@ app.post("/register", (req, res) => {
       }
     }
 
-    if (userExists === true){
+    if (userExists === true) {
       res.status(400);
       res.send("Error 400 User already exists");
     } else {
@@ -95,7 +95,6 @@ app.post("/register", (req, res) => {
       res.redirect("/urls");
     }
   }
-  
 });
 
 //login templateVars
